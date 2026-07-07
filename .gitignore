@@ -1,0 +1,41 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.local.properties
+local.properties
+**/local.properties
+
+# Kotlin / Java
+out/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+*.env
+**/.env
+backend/.env
+
+# H2 / local database files
+*.db
+*.mv.db
+*.trace.db
+
+# Android generated files
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Keystore / secrets
+*.jks
+*.keystore
