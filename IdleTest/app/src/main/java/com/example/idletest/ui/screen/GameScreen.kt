@@ -8,6 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import com.example.idletest.data.local.PlayerIdStorage
 import com.example.idletest.data.mapper.toDto
 import com.example.idletest.data.mapper.toGameState
 import com.example.idletest.data.remote.RetrofitClient
@@ -35,10 +37,14 @@ fun GameScreen() {
     }
 
     val coroutineScope = rememberCoroutineScope()
-    val userId = 1L
+
+    val context = LocalContext.current
+    val userId = remember {
+        PlayerIdStorage.getOrCreatePlayerId(context)
+    }
 
     // Autoload on launch
-    /*
+
     LaunchedEffect(Unit) {
         try {
             val loadedProgress = RetrofitClient.api.getProgress(userId)
@@ -48,7 +54,6 @@ fun GameScreen() {
             message = "Load failed, starting with default progress!"
         }
     }
-    */
 
     LaunchedEffect(gameState.gameStatus) {
         while (gameState.gameStatus == GameStatus.IN_WAVE) {
@@ -128,7 +133,7 @@ fun GameScreen() {
                 try {
                     val savedProgress = RetrofitClient.api.saveProgress(
                         userId = userId,
-                        progress = gameState.toDto()
+                        progress = gameState.toDto(userId)
                     )
 
                     gameState = savedProgress.toGameState()
