@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +25,7 @@ import com.example.idletest.ui.components.game.UpgradeHud
 fun GameContent(
     gameState: GameState,
     message: String,
+    onBackToMenu: () -> Unit,
     onStartWave: () -> Unit,
     onBuyUpgrade: (String) -> Unit,
     onUseAbility: (String) -> Unit,
@@ -54,6 +57,17 @@ fun GameContent(
                 .align(Alignment.TopStart)
                 .padding(start = if (upgradeHudOpen) 140.dp else 8.dp, top = 6.dp, end = 58.dp)
         )
+
+        OutlinedButton(
+            onClick = onBackToMenu,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 56.dp, end = 8.dp)
+        ) {
+            Text(
+                text = "Menu"
+            )
+        }
 
         if (upgradeHudOpen) {
             UpgradeHud(

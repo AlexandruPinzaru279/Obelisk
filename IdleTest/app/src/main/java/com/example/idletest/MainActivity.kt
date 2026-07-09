@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.idletest.ui.screen.GameScreen
+import com.example.idletest.ui.screen.AppRoot
 
 
 // porneste GameScreen
@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            GameScreen()
+            AppRoot()
         }
     }
 }

@@ -14,6 +14,7 @@ import com.example.idletest.data.local.PlayerIdStorage
 import com.example.idletest.data.mapper.toDto
 import com.example.idletest.data.mapper.toGameState
 import com.example.idletest.data.remote.RetrofitClient
+import com.example.idletest.domain.model.GameDifficulty
 import com.example.idletest.domain.model.GameState
 import com.example.idletest.domain.model.GameStatus
 import com.example.idletest.domain.rules.buyUpgrade
@@ -29,7 +30,10 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun GameScreen() {
+fun GameScreen(
+    difficulty: GameDifficulty = GameDifficulty.NORMAL,
+    onBackToMenu: () -> Unit = {}
+) {
     var gameState by remember {
         mutableStateOf(GameState())
     }
@@ -64,7 +68,10 @@ fun GameScreen() {
         while (true) {
             delay(30.seconds)
             try {
-                RetrofitClient.api.saveProgress(userId, latestGameState.toDto())
+                RetrofitClient.api.saveProgress(
+                    userId = userId,
+                    progress = latestGameState.toDto()
+                )
             } catch (exception: Exception) {
                 message = "Autosave failed!"
             }
@@ -94,6 +101,7 @@ fun GameScreen() {
     GameContent(
         gameState = gameState,
         message = message,
+        onBackToMenu = onBackToMenu,
 
         onStartWave = {
             val previousStatus = gameState.gameStatus
