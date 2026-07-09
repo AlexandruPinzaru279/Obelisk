@@ -23,6 +23,7 @@ import com.example.idletest.domain.rules.restartWave
 import com.example.idletest.domain.rules.startWave
 import com.example.idletest.domain.rules.toggleAutoStartWave
 import com.example.idletest.domain.rules.useAbility
+import com.example.idletest.domain.rules.withUpdatedAchievements
 import com.example.idletest.ui.components.GameContent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -94,7 +95,7 @@ fun GameScreen(
                 updatedState = updatedState.startWave()
             }
 
-            gameState = updatedState
+            gameState = updatedState.withUpdatedAchievements()
         }
     }
 
@@ -133,7 +134,7 @@ fun GameScreen(
             val previousEnergy = gameState.energy
             val previousState = gameState
 
-            gameState = gameState.buyUpgrade(upgradeId)
+            gameState = gameState.buyUpgrade(upgradeId).withUpdatedAchievements()
 
             message = if (gameState == previousState) {
                 "Upgrade could not be bought. Not enough energy or max level reached."
@@ -174,7 +175,7 @@ fun GameScreen(
                     val loadedProgress = RetrofitClient.api.getProgress(
                         userId
                     )
-                    gameState = loadedProgress.toGameState()
+                    gameState = loadedProgress.toGameState().withUpdatedAchievements()
                     message = "Progress loaded!"
                 } catch (exception: Exception) {
                     message = "Load failed!"

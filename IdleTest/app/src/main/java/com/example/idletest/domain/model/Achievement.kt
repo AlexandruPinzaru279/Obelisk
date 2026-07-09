@@ -47,7 +47,7 @@ data class Achievement (
                 Achievement(
                     id = "tower_builder",
                     title = "Tower Builder",
-                    description = "Buy your first three upgrades."
+                    description = "Buy 3 different upgrades."
                 )
             )
         }

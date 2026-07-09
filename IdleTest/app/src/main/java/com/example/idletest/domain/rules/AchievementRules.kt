@@ -4,7 +4,6 @@ import com.example.idletest.domain.model.GameState
 import com.example.idletest.domain.model.Achievement
 
 // extension function
-// nu e folosita inca!
 fun GameState.withUpdatedAchievements(): GameState {
     val updatedAchievements = achievements.map { achievement ->
         if(achievement.unlocked) {
@@ -24,7 +23,7 @@ private fun GameState.shouldUnlockAchievement(
     achievementId: String
 ): Boolean {
     return when(achievementId) {
-        "first_wave" -> waveState.currentWave >= 1
+        "first_wave" -> waveState.currentWave > 1
 
         "wave_5" -> waveState.currentWave >= 5
 
@@ -39,6 +38,10 @@ private fun GameState.shouldUnlockAchievement(
         "tower_upgraded" -> availableUpgrades.any { upgrade ->
             upgrade.level > 0
         }
+
+        "tower_builder" -> availableUpgrades.count { upgrade ->
+            upgrade.level > 0
+        } >= 3
 
         else -> false
     }
