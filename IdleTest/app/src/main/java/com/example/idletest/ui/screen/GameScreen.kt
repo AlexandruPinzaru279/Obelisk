@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.example.idletest.data.local.PlayerIdStorage
@@ -25,6 +26,7 @@ import com.example.idletest.ui.components.GameContent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun GameScreen() {
@@ -43,8 +45,8 @@ fun GameScreen() {
         PlayerIdStorage.getOrCreatePlayerId(context)
     }
 
-    // Autoload on launch
 
+    // Autoload on launch
     LaunchedEffect(Unit) {
         try {
             val loadedProgress = RetrofitClient.api.getProgress(userId)
@@ -52,6 +54,20 @@ fun GameScreen() {
             message = "Progress loaded!"
         } catch (exception: Exception) {
             message = "Load failed, starting with default progress!"
+        }
+    }
+
+    // Autosave on 30 seconds
+    val latestGameState by rememberUpdatedState(gameState)
+
+    LaunchedEffect(userId) {
+        while (true) {
+            delay(30.seconds)
+            try {
+                RetrofitClient.api.saveProgress(userId, latestGameState.toDto())
+            } catch (exception: Exception) {
+                message = "Autosave failed!"
+            }
         }
     }
 

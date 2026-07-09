@@ -12,8 +12,8 @@ data class GameProgressDto(
     val coreHp: Int = 100,
     val coreMaxHp: Int = 100,
 
-    val towerDamage: Int = 10,
-    val towerAttackSpeed: Double = 1.0,
+    val towerDamage: Int = 40,
+    val towerAttackSpeed: Double = 1.5,
     val towerRange: Double = 200.0,
 
     val upgrades: List<UpgradeProgressDto> = emptyList(),
