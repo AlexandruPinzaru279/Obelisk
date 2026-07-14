@@ -24,7 +24,8 @@ data class GameState (
      */
     val selectedUpgrades: List<Upgrade> = emptyList(),
     val availableUpgrades: List<Upgrade> = Upgrade.defaultUpgrades(),
-
+    val permanentUpgrades: List<PermanentUpgrade> =
+        PermanentUpgrade.defaultPermanentUpgrades(),
     /* the abilities the player can use to interact with the run
     ex: freeze(stops all enemies for 2 seconds),
     shockwave(damages all nearby enemies)

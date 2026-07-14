@@ -22,8 +22,8 @@ class GameProgress(
     var coreHp: Int = 100,
     var coreMaxHp: Int = 100,
 
-    var towerDamage: Int = 10,
-    var towerAttackSpeed: Double = 1.0,
+    var towerDamage: Int = 40,
+    var towerAttackSpeed: Double = 1.5,
     var towerRange: Double = 200.0,
 
     @Column(columnDefinition = "TEXT")
@@ -34,4 +34,7 @@ class GameProgress(
 
     @Column(columnDefinition = "TEXT")
     var abilitiesJson: String = "[]",
+
+    @Column(columnDefinition = "TEXT")
+    var permanentUpgradesJson: String = "[]"
 )

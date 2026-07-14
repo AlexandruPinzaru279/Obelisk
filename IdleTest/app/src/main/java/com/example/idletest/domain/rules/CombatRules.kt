@@ -4,6 +4,7 @@ import com.example.idletest.domain.model.Enemy
 import com.example.idletest.domain.model.EnemyType
 import com.example.idletest.domain.model.GameState
 import com.example.idletest.domain.model.GameStatus
+import com.example.idletest.domain.model.PermanentUpgradeType
 import com.example.idletest.domain.model.UpgradeType
 import kotlin.random.Random
 
@@ -157,8 +158,9 @@ fun GameState.combatTick(deltaSeconds: Double): GameState {
     var enemiesStillOnPath = movedEnemies.filter { enemy ->
         enemy.distanceToCore > 0
     }
-
-    val newAttackProgress = tower.attackProgress + tower.attackSpeed * deltaSeconds
+    val finalDamage = (tower.damage * getPermanentDamageMultiplier()).toInt()
+    val finalAttackSpeed = (tower.attackSpeed * getPermanentAttackSpeedMultiplier())
+    val newAttackProgress = tower.attackProgress + finalAttackSpeed * deltaSeconds
     val attacksToPerform = newAttackProgress.toInt()
     val remainingAttackProgress = newAttackProgress - attacksToPerform
 
@@ -173,7 +175,7 @@ fun GameState.combatTick(deltaSeconds: Double): GameState {
             enemiesStillOnPath = enemiesStillOnPath.map { enemy ->
                 if(enemy.id == target.id) {
                     enemy.copy(
-                        hp = enemy.hp - tower.damage
+                        hp = enemy.hp - finalDamage
                     )
                 } else {
                     enemy
@@ -236,8 +238,6 @@ fun GameState.combatTick(deltaSeconds: Double): GameState {
 
     return updatedState
 }
-
-
 
 fun GameState.buyUpgrade(upgradeId: String): GameState {
     val upgrade = availableUpgrades.find { it.id == upgradeId }
@@ -311,4 +311,18 @@ fun GameState.buyUpgrade(upgradeId: String): GameState {
         coreMaxHp = updatedCoreMaxHp,
         availableUpgrades = updatedUpgrades
     )
+}
+
+fun GameState.getPermanentDamageMultiplier(): Double {
+    return permanentUpgrades
+        .find { it.type == PermanentUpgradeType.DAMAGE_MULTIPLIER }
+        ?.currentMultiplier
+        ?:1.0
+}
+
+fun GameState.getPermanentAttackSpeedMultiplier(): Double {
+    return permanentUpgrades
+        .find { it.type == PermanentUpgradeType.ATTACK_SPEED_MULTIPLIER }
+        ?.currentMultiplier
+        ?:1.0
 }

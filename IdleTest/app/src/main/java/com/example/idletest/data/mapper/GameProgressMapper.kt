@@ -11,6 +11,8 @@ import com.example.idletest.domain.model.GameStatus
 import com.example.idletest.domain.model.TowerState
 import com.example.idletest.domain.model.Upgrade
 import com.example.idletest.domain.model.WaveState
+import com.example.idletest.data.remote.PermanentUpgradeProgressDto
+import com.example.idletest.domain.model.PermanentUpgrade
 
 // converter class
 fun GameState.toDto(
@@ -51,6 +53,13 @@ fun GameState.toDto(
                 level = ability.level,
                 cooldownRemaining = ability.cooldownRemaining
             )
+        },
+
+        permanentUpgrades = permanentUpgrades.map { permanentUpgrade ->
+            PermanentUpgradeProgressDto(
+                id = permanentUpgrade.id,
+                level = permanentUpgrade.level
+            )
         }
     )
 }
@@ -69,6 +78,11 @@ fun GameProgressDto.toGameState(): GameState {
     val abilityProgressById = abilities.associateBy { ability ->
         ability.id
     }
+
+    val permanentUpgradeLevelsById = permanentUpgrades.associateBy(
+        keySelector = { it.id },
+        valueTransform = { it.level }
+    )
 
     val restoredUpgrades = Upgrade.defaultUpgrades().map { upgrade ->
         upgrade.copy(
@@ -90,6 +104,14 @@ fun GameProgressDto.toGameState(): GameState {
             cooldownRemaining = savedAbility?.cooldownRemaining ?: ability.cooldownRemaining
         )
     }
+
+    val restoredPermanentUpgrades =
+        PermanentUpgrade.defaultPermanentUpgrades().map { permanentUpgrade ->
+            permanentUpgrade.copy(
+                level = permanentUpgradeLevelsById[permanentUpgrade.id]
+                    ?: permanentUpgrade.level
+            )
+        }
 
     return GameState(
         energy = energy,
@@ -119,6 +141,7 @@ fun GameProgressDto.toGameState(): GameState {
 
         abilities = restoredAbilities,
         enemies = emptyList(),
-        achievements = restoredAchievements
+        achievements = restoredAchievements,
+        permanentUpgrades = restoredPermanentUpgrades
     )
 }

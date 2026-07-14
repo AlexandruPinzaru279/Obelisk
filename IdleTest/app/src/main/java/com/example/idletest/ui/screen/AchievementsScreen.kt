@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.idletest.data.local.PlayerIdStorage
@@ -75,7 +76,7 @@ fun AchievementsScreen(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         ) {
         Text(
-            text = "Achievements (will not work for now, the backend is outdated)",
+            text = "Achievements",
             style = MaterialTheme.typography.headlineLarge
         )
 

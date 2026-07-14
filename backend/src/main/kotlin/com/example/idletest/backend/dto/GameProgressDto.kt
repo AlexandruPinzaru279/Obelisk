@@ -18,5 +18,6 @@ data class GameProgressDto(
 
     val upgrades: List<UpgradeProgressDto> = emptyList(),
     val achievements: List<AchievementProgressDto> = emptyList(),
-    val abilities: List<AbilityProgressDto> = emptyList()
+    val abilities: List<AbilityProgressDto> = emptyList(),
+    val permanentUpgrades: List<PermanentUpgradeProgressDto> = emptyList()
 )

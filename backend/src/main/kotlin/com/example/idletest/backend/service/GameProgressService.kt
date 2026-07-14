@@ -3,6 +3,7 @@ package com.example.idletest.backend.service
 import com.example.idletest.backend.dto.AbilityProgressDto
 import com.example.idletest.backend.dto.AchievementProgressDto
 import com.example.idletest.backend.dto.GameProgressDto
+import com.example.idletest.backend.dto.PermanentUpgradeProgressDto
 import com.example.idletest.backend.dto.UpgradeProgressDto
 import com.example.idletest.backend.model.GameProgress
 import com.example.idletest.backend.repository.GameProgressRepository
@@ -43,6 +44,7 @@ class GameProgressService(
         progress.upgradesJson = writeJson(dto.upgrades)
         progress.achievementsJson = writeJson(dto.achievements)
         progress.abilitiesJson = writeJson(dto.abilities)
+        progress.permanentUpgradesJson = writeJson(dto.permanentUpgrades)
 
         return gameProgressRepository.save(progress).toDto()
     }
@@ -66,7 +68,8 @@ class GameProgressService(
 
             upgrades = readUpgrades(upgradesJson),
             achievements = readAchievements(achievementsJson),
-            abilities = readAbilities(abilitiesJson)
+            abilities = readAbilities(abilitiesJson),
+            permanentUpgrades = readPermanentUpgrades(permanentUpgradesJson)
         )
     }
 
@@ -116,6 +119,21 @@ class GameProgressService(
                 objectMapper.readValue(
                     json,
                     object : TypeReference<List<AbilityProgressDto>>() {}
+                )
+            }
+        } catch (exception: Exception) {
+            emptyList()
+        }
+    }
+
+    private fun readPermanentUpgrades(json: String?): List<PermanentUpgradeProgressDto> {
+        return try {
+            if(json.isNullOrBlank()) {
+                emptyList()
+            } else {
+                objectMapper.readValue(
+                    json,
+                    object: TypeReference<List<PermanentUpgradeProgressDto>>() {}
                 )
             }
         } catch (exception: Exception) {
