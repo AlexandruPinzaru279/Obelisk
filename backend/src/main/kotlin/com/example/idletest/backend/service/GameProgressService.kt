@@ -33,7 +33,7 @@ class GameProgressService(
         progress.energy = dto.energy
         progress.globalEnergy = dto.globalEnergy
         progress.currentWave = dto.currentWave
-        progress.difficulty = dto.difficulty
+        progress.difficulty = dto.difficulty.ifBlank { "NORMAL" }
 
         progress.coreHp = dto.coreHp
         progress.coreMaxHp = dto.coreMaxHp
@@ -58,7 +58,7 @@ class GameProgressService(
             energy = energy,
             globalEnergy = globalEnergy,
 
-            difficulty = difficulty,
+            difficulty = difficulty ?: "NORMAL",
 
             currentWave = currentWave,
 
