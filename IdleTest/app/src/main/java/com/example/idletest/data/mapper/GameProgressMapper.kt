@@ -12,6 +12,7 @@ import com.example.idletest.domain.model.TowerState
 import com.example.idletest.domain.model.Upgrade
 import com.example.idletest.domain.model.WaveState
 import com.example.idletest.data.remote.PermanentUpgradeProgressDto
+import com.example.idletest.domain.model.GameDifficulty
 import com.example.idletest.domain.model.PermanentUpgrade
 
 // converter class
@@ -23,6 +24,8 @@ fun GameState.toDto(
 
         energy = energy,
         globalEnergy = globalEnergy,
+
+        difficulty = difficulty.name,
 
         currentWave = waveState.currentWave,
 
@@ -113,9 +116,16 @@ fun GameProgressDto.toGameState(): GameState {
             )
         }
 
+    val restoredDifficulty = GameDifficulty.entries
+        .firstOrNull { gameDifficulty ->
+            gameDifficulty.name == difficulty
+        } ?: GameDifficulty.NORMAL
+
     return GameState(
         energy = energy,
         globalEnergy = globalEnergy,
+
+        difficulty = restoredDifficulty,
 
         gameStatus = GameStatus.IDLE,
 

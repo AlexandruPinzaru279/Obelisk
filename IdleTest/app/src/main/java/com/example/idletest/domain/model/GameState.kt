@@ -11,6 +11,9 @@ data class GameState (
     // info about the wave ex: nr of enemies to spawn
     val waveState: WaveState = WaveState(),
 
+    // saved the difficulty of the game
+    val difficulty: GameDifficulty = GameDifficulty.NORMAL,
+
     val coreHp: Int = 100, // current hp
     val coreMaxHp: Int = 100,
     // tower offensive stats

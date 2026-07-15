@@ -17,6 +17,9 @@ class GameProgress(
     var energy: Int = 0,
     var globalEnergy: Int = 0,
 
+    @Column(length = 20)
+    var difficulty: String = "NORMAL",
+
     var currentWave: Int = 1,
 
     var coreHp: Int = 100,

@@ -33,6 +33,7 @@ class GameProgressService(
         progress.energy = dto.energy
         progress.globalEnergy = dto.globalEnergy
         progress.currentWave = dto.currentWave
+        progress.difficulty = dto.difficulty
 
         progress.coreHp = dto.coreHp
         progress.coreMaxHp = dto.coreMaxHp
@@ -56,6 +57,8 @@ class GameProgressService(
 
             energy = energy,
             globalEnergy = globalEnergy,
+
+            difficulty = difficulty,
 
             currentWave = currentWave,
 

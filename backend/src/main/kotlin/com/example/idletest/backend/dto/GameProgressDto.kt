@@ -7,6 +7,8 @@ data class GameProgressDto(
     val energy: Int = 0,
     val globalEnergy: Int = 0,
 
+    val difficulty: String = "NORMAL",
+
     val currentWave: Int = 1,
 
     val coreHp: Int = 100,

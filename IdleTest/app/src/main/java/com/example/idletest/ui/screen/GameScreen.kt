@@ -28,14 +28,21 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import com.example.idletest.domain.rules.startNewRun
+import com.example.idletest.ui.navigation.GameLaunchMode
 
 @Composable
 fun GameScreen(
     difficulty: GameDifficulty = GameDifficulty.NORMAL,
+    launchMode: GameLaunchMode = GameLaunchMode.CONTINUE,
     onBackToMenu: () -> Unit = {}
 ) {
-    var gameState by remember {
-        mutableStateOf(GameState())
+    var gameState by remember(launchMode,difficulty) {
+        mutableStateOf(GameState(difficulty = difficulty))
+    }
+
+    var progressInitialized by remember(launchMode, difficulty) {
+        mutableStateOf(false)
     }
 
     var message by remember {
@@ -51,26 +58,72 @@ fun GameScreen(
 
 
     // Autoload on launch
-    LaunchedEffect(Unit) {
+    LaunchedEffect(
+        userId,
+        launchMode,
+        difficulty
+    ) {
+        progressInitialized = false
+
         try {
-            val loadedProgress = RetrofitClient.api.getProgress(userId)
-            gameState = loadedProgress.toGameState()
-            message = "Progress loaded!"
+            val loadedState = RetrofitClient.api
+                .getProgress(userId)
+                .toGameState()
+
+            gameState = when (launchMode) {
+                GameLaunchMode.CONTINUE -> {
+                    message = "Progress loaded!"
+                    loadedState
+                }
+
+                GameLaunchMode.NEW_GAME -> {
+                    val newRunState = loadedState.startNewRun(
+                        selectedDifficulty = difficulty
+                    )
+
+                    val savedProgress = RetrofitClient.api.saveProgress(
+                        userId = userId,
+                        progress = newRunState.toDto(userId)
+                    )
+
+                    message = "New ${difficulty.name} game started!"
+
+                    savedProgress.toGameState()
+                }
+            }
+
+            progressInitialized = true
         } catch (exception: Exception) {
-            message = "Load failed, starting with default progress!"
+            message = when (launchMode) {
+                GameLaunchMode.CONTINUE -> {
+                    "Progress could not be loaded!"
+                }
+
+                GameLaunchMode.NEW_GAME -> {
+                    "New game could not be created!"
+                }
+            }
         }
     }
 
     // Autosave on 30 seconds
     val latestGameState by rememberUpdatedState(gameState)
 
-    LaunchedEffect(userId) {
+    LaunchedEffect(
+        userId,
+        progressInitialized
+    ) {
+        if (!progressInitialized) {
+            return@LaunchedEffect
+        }
+
         while (true) {
             delay(30.seconds)
+
             try {
                 RetrofitClient.api.saveProgress(
                     userId = userId,
-                    progress = latestGameState.toDto()
+                    progress = latestGameState.toDto(userId)
                 )
             } catch (exception: Exception) {
                 message = "Autosave failed!"
@@ -160,7 +213,8 @@ fun GameScreen(
                         progress = gameState.toDto(userId)
                     )
 
-                    gameState = savedProgress.toGameState()
+                    gameState = savedProgress
+                        .toGameState()
                     message = "Progress saved!"
                 } catch (exception: Exception) {
                     message = "Save failed!"
@@ -174,7 +228,9 @@ fun GameScreen(
                     val loadedProgress = RetrofitClient.api.getProgress(
                         userId
                     )
-                    gameState = loadedProgress.toGameState().withUpdatedAchievements()
+                    gameState = loadedProgress
+                        .toGameState()
+                        .withUpdatedAchievements()
                     message = "Progress loaded!"
                 } catch (exception: Exception) {
                     message = "Load failed!"

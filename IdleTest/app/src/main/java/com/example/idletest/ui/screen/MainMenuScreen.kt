@@ -1,6 +1,5 @@
 package com.example.idletest.ui.screen
 
-import android.widget.Space
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,7 +16,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainMenuScreen(
-    onPlayClick: () -> Unit,
+    onContinueClick: () -> Unit,
+    onNewGameClick: () -> Unit,
     onAchievementsClick: () -> Unit,
     onPermanentUpgradesClick: () -> Unit
 ) {
@@ -33,14 +33,22 @@ fun MainMenuScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // play button
+        // continue button
         Button(
             modifier = Modifier.width(240.dp),
-            onClick = onPlayClick
+            onClick = onContinueClick
         ) {
-            Text(
-                text = "Play"
-            )
+            Text(text = "Continue")
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // new game button
+        Button(
+            modifier = Modifier.width(240.dp),
+            onClick = onNewGameClick
+        ) {
+            Text(text = "New Game")
         }
 
         Spacer(modifier = Modifier.height(12.dp))

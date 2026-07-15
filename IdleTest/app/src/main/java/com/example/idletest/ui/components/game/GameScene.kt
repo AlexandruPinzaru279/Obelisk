@@ -57,7 +57,7 @@ fun GameScene(
         )
 
         Text(
-            text = gameState.gameStatus.name,
+            text = "${gameState.difficulty.name} <> ${gameState.gameStatus.name}",
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 38.dp),

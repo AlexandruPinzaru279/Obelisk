@@ -1,5 +1,7 @@
 package com.example.idletest.domain.model
 
+import kotlin.math.roundToInt
+
 data class Enemy(
     val id: String,
     val type: EnemyType,
@@ -13,15 +15,16 @@ data class Enemy(
     // val defense: Int
 ) {
     val isDead: Boolean
-        get() = hp <=0
+        get() = hp <= 0
 
     companion object {
         fun createForWave(
             wave: Int,
             index: Int,
-            type: EnemyType = EnemyType.BASIC
+            type: EnemyType = EnemyType.BASIC,
+            difficulty: GameDifficulty = GameDifficulty.NORMAL
         ): Enemy {
-            return when (type) {
+            val baseEnemy = when (type) {
                 EnemyType.BASIC -> Enemy(
                     id = "wave_${wave}_enemy_$index",
                     type = EnemyType.BASIC,
@@ -43,16 +46,18 @@ data class Enemy(
                     distanceToCore = 300.0,
                     reward = 6 + wave
                 )
+
                 EnemyType.TANK -> Enemy(
                     id = "wave_${wave}_enemy_$index",
                     type = EnemyType.TANK,
                     hp = 80 + wave * 10,
                     maxHp = 80 + wave * 10,
                     damage = 10 + wave,
-                    speed =25.0,
+                    speed = 25.0,
                     distanceToCore = 300.0,
                     reward = 12 + wave * 2
                 )
+
                 EnemyType.BOSS -> Enemy(
                     id = "wave_${wave}_enemy_$index",
                     type = EnemyType.BOSS,
@@ -61,9 +66,25 @@ data class Enemy(
                     damage = 20 + wave * 2,
                     speed = 20.0,
                     distanceToCore = 300.0,
-                    reward = 50  + wave * 5
+                    reward = 50 + wave * 5
                 )
             }
+
+            val finalHp = (
+                baseEnemy.maxHp * difficulty.enemyHpMultiplier
+            ).roundToInt().coerceAtLeast(1)
+
+            return baseEnemy.copy(
+                hp = finalHp,
+                maxHp = finalHp,
+                damage = (
+                    baseEnemy.damage * difficulty.enemyDamageMultiplier
+                ).roundToInt().coerceAtLeast(1),
+                speed = baseEnemy.speed * difficulty.enemySpeedMultiplier,
+                reward = (
+                    baseEnemy.reward * difficulty.enemyRewardMultiplier
+                ).roundToInt().coerceAtLeast(1)
+            )
         }
     }
 }

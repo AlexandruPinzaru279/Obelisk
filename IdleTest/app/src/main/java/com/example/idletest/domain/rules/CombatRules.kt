@@ -6,6 +6,7 @@ import com.example.idletest.domain.model.GameState
 import com.example.idletest.domain.model.GameStatus
 import com.example.idletest.domain.model.PermanentUpgradeType
 import com.example.idletest.domain.model.UpgradeType
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 fun GameState.startWave(): GameState {
@@ -71,7 +72,9 @@ fun GameState.completeWave(): GameState {
 
     val nextWave = waveState.currentWave + 1
     val nextEnemiesToSpawn = waveState.enemiesToSpawn + 1
-    val waveReward = waveState.currentWave * 20
+    val baseWaveReward = waveState.currentWave * 20
+    val waveReward = (baseWaveReward * difficulty.enemyRewardMultiplier)
+        .roundToInt()
 
     return copy(
         gameStatus = GameStatus.WAVE_COMPLETED,
@@ -126,7 +129,8 @@ fun GameState.combatTick(deltaSeconds: Double): GameState {
         val newEnemy = Enemy.createForWave(
             wave = updatedWaveState.currentWave,
             index = nextEnemyIndex,
-            type = enemyType
+            type = enemyType,
+            difficulty = difficulty
         )
 
         currentEnemies = currentEnemies + newEnemy

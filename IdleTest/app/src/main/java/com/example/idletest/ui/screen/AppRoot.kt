@@ -7,6 +7,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.example.idletest.domain.model.GameDifficulty
 import com.example.idletest.ui.navigation.AppScreen
+import com.example.idletest.ui.navigation.GameLaunchMode
 
 // Screen navigation logic!
 @Composable
@@ -19,10 +20,19 @@ fun AppRoot() {
         mutableStateOf(GameDifficulty.NORMAL)
     }
 
+    var gameLaunchMode by rememberSaveable {
+        mutableStateOf(GameLaunchMode.CONTINUE)
+    }
+
     when(currentScreen) {
         AppScreen.MAIN_MENU -> {
             MainMenuScreen(
-                onPlayClick = {
+                onContinueClick = {
+                    gameLaunchMode = GameLaunchMode.CONTINUE
+                    currentScreen = AppScreen.GAME
+                },
+                onNewGameClick = {
+                    gameLaunchMode = GameLaunchMode.NEW_GAME
                     currentScreen = AppScreen.DIFFICULTY_SELECT
                 },
                 onAchievementsClick = {
@@ -38,6 +48,7 @@ fun AppRoot() {
             DifficultySelectScreen(
                 onDifficultySelected = { difficulty ->
                     selectedDifficulty = difficulty
+                    gameLaunchMode = GameLaunchMode.NEW_GAME
                     currentScreen = AppScreen.GAME
                 },
                 onBackClick = {
@@ -49,6 +60,7 @@ fun AppRoot() {
         AppScreen.GAME -> {
             GameScreen(
                 difficulty = selectedDifficulty,
+                launchMode = gameLaunchMode,
                 onBackToMenu = {
                     currentScreen = AppScreen.MAIN_MENU
                 }
