@@ -25,10 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.idletest.data.local.PlayerIdStorage
 import com.example.idletest.data.mapper.toGameState
 import com.example.idletest.data.remote.RetrofitClient
 import com.example.idletest.domain.model.Achievement
@@ -38,12 +35,6 @@ import com.example.idletest.domain.model.GameState
 fun AchievementsScreen(
     onBackClick: () -> Unit
 ) {
-    val context = LocalContext.current
-
-    val userId = remember {
-        PlayerIdStorage.getOrCreatePlayerId(context)
-    }
-
     var gameState by remember {
         mutableStateOf(GameState())
     }
@@ -56,9 +47,9 @@ fun AchievementsScreen(
         mutableStateOf("")
     }
 
-    LaunchedEffect(userId) {
+    LaunchedEffect(Unit) {
         try {
-            val loadedProgress = RetrofitClient.api.getProgress(userId)
+            val loadedProgress = RetrofitClient.api.getProgress()
             gameState = loadedProgress.toGameState()
             message = "Achievements loaded."
         } catch (exception: Exception) {

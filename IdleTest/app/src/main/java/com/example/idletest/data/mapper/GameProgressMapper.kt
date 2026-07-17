@@ -16,12 +16,8 @@ import com.example.idletest.domain.model.GameDifficulty
 import com.example.idletest.domain.model.PermanentUpgrade
 
 // converter class
-fun GameState.toDto(
-    userId: Long = 1
-): GameProgressDto {
+fun GameState.toDto(): GameProgressDto {
     return GameProgressDto(
-        userId = userId,
-
         energy = energy,
         globalEnergy = globalEnergy,
 

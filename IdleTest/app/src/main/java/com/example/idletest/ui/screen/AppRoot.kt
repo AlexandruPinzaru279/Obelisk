@@ -5,6 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import com.example.idletest.data.local.AuthStorage
 import com.example.idletest.domain.model.GameDifficulty
 import com.example.idletest.ui.navigation.AppScreen
 import com.example.idletest.ui.navigation.GameLaunchMode
@@ -12,8 +14,16 @@ import com.example.idletest.ui.navigation.GameLaunchMode
 // Screen navigation logic!
 @Composable
 fun AppRoot() {
+    val context = LocalContext.current
+
     var currentScreen by rememberSaveable {
-        mutableStateOf(AppScreen.MAIN_MENU)
+        mutableStateOf(
+            if (AuthStorage.isLoggedIn(context)) {
+                AppScreen.MAIN_MENU
+            } else {
+                AppScreen.LOGIN
+            }
+        )
     }
 
     var selectedDifficulty by rememberSaveable {
@@ -24,7 +34,29 @@ fun AppRoot() {
         mutableStateOf(GameLaunchMode.CONTINUE)
     }
 
-    when(currentScreen) {
+    when (currentScreen) {
+        AppScreen.LOGIN -> {
+            LoginScreen(
+                onLoginSuccess = {
+                    currentScreen = AppScreen.MAIN_MENU
+                },
+                onRegisterClick = {
+                    currentScreen = AppScreen.REGISTER
+                }
+            )
+        }
+
+        AppScreen.REGISTER -> {
+            RegisterScreen(
+                onRegisterSuccess = {
+                    currentScreen = AppScreen.MAIN_MENU
+                },
+                onBackToLogin = {
+                    currentScreen = AppScreen.LOGIN
+                }
+            )
+        }
+
         AppScreen.MAIN_MENU -> {
             MainMenuScreen(
                 onContinueClick = {

@@ -8,8 +8,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import com.example.idletest.data.local.PlayerIdStorage
 import com.example.idletest.data.mapper.toDto
 import com.example.idletest.data.mapper.toGameState
 import com.example.idletest.data.remote.RetrofitClient
@@ -51,15 +49,8 @@ fun GameScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val context = LocalContext.current
-    val userId = remember {
-        PlayerIdStorage.getOrCreatePlayerId(context)
-    }
-
-
     // Autoload on launch
     LaunchedEffect(
-        userId,
         launchMode,
         difficulty
     ) {
@@ -67,7 +58,7 @@ fun GameScreen(
 
         try {
             val loadedState = RetrofitClient.api
-                .getProgress(userId)
+                .getProgress()
                 .toGameState()
 
             gameState = when (launchMode) {
@@ -82,8 +73,7 @@ fun GameScreen(
                     )
 
                     val savedProgress = RetrofitClient.api.saveProgress(
-                        userId = userId,
-                        progress = newRunState.toDto(userId)
+                        progress = newRunState.toDto()
                     )
 
                     message = "New ${difficulty.name} game started!"
@@ -109,10 +99,7 @@ fun GameScreen(
     // Autosave on 30 seconds
     val latestGameState by rememberUpdatedState(gameState)
 
-    LaunchedEffect(
-        userId,
-        progressInitialized
-    ) {
+    LaunchedEffect(progressInitialized) {
         if (!progressInitialized) {
             return@LaunchedEffect
         }
@@ -122,8 +109,7 @@ fun GameScreen(
 
             try {
                 RetrofitClient.api.saveProgress(
-                    userId = userId,
-                    progress = latestGameState.toDto(userId)
+                    progress = latestGameState.toDto()
                 )
             } catch (exception: Exception) {
                 message = "Autosave failed!"
@@ -209,8 +195,7 @@ fun GameScreen(
             coroutineScope.launch {
                 try {
                     val savedProgress = RetrofitClient.api.saveProgress(
-                        userId = userId,
-                        progress = gameState.toDto(userId)
+                        progress = gameState.toDto()
                     )
 
                     gameState = savedProgress
@@ -225,9 +210,7 @@ fun GameScreen(
         onLoadProgress = {
             coroutineScope.launch {
                 try {
-                    val loadedProgress = RetrofitClient.api.getProgress(
-                        userId
-                    )
+                    val loadedProgress = RetrofitClient.api.getProgress()
                     gameState = loadedProgress
                         .toGameState()
                         .withUpdatedAchievements()

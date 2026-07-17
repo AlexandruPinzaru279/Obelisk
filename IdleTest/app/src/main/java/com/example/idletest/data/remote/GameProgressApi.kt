@@ -6,12 +6,11 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface GameProgressApi {
-    @GET("api/progress/{userId}")
-    suspend fun getProgress(@Path("userId") userId: Long): GameProgressDto
+    @GET("api/progress/me")
+    suspend fun getProgress(): GameProgressDto
 
-    @PUT("api/progress/{userId}")
+    @PUT("api/progress/me")
     suspend fun saveProgress(
-        @Path("userId") userId: Long,
         @Body progress: GameProgressDto
     ): GameProgressDto
 }

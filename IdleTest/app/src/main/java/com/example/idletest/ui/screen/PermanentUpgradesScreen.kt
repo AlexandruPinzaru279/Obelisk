@@ -1,7 +1,5 @@
 package com.example.idletest.ui.screen
 
-import android.R
-import android.health.connect.datatypes.units.Energy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,9 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.idletest.data.local.PlayerIdStorage
 import com.example.idletest.data.mapper.toDto
 import com.example.idletest.data.mapper.toGameState
 import com.example.idletest.data.remote.RetrofitClient
@@ -37,19 +33,12 @@ import com.example.idletest.domain.model.GameState
 import com.example.idletest.domain.model.PermanentUpgrade
 import com.example.idletest.domain.rules.buyPermanentUpgrade
 import kotlinx.coroutines.launch
-import java.nio.file.WatchEvent
 
 
 @Composable
 fun PermanentUpgradesScreen(
     onBackClick: () -> Unit
 ) {
-    val context = LocalContext.current
-
-    val userId = remember {
-        PlayerIdStorage.getOrCreatePlayerId(context)
-    }
-
     val coroutineScope = rememberCoroutineScope()
 
     var gameState by remember {
@@ -68,9 +57,9 @@ fun PermanentUpgradesScreen(
         mutableStateOf("")
     }
 
-    LaunchedEffect(userId) {
+    LaunchedEffect(Unit) {
         try {
-            val loadedProgress = RetrofitClient.api.getProgress(userId)
+            val loadedProgress = RetrofitClient.api.getProgress()
 
             gameState = loadedProgress.toGameState()
             message = "Permanent upgrades loaded."
@@ -152,8 +141,7 @@ fun PermanentUpgradesScreen(
 
                                 try {
                                     val savedProgress = RetrofitClient.api.saveProgress(
-                                        userId = userId,
-                                        progress = updatedState.toDto(userId)
+                                        progress = updatedState.toDto()
                                     )
 
                                     gameState = savedProgress.toGameState()

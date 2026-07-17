@@ -2,7 +2,6 @@ package com.example.idletest.data.remote
 
 data class GameProgressDto(
     val id: Long? = null,
-    val userId: Long = 1,
 
     val energy: Int = 0,
     val globalEnergy: Int = 0,
