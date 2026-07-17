@@ -10,7 +10,7 @@ interface AuthApi {
         @Body request: RegisterRequest
     ): AuthResponse
 
-    @POST("api/aauth/login")
+    @POST("api/auth/login")
     suspend fun login(
         @Body request: LoginRequest
     ): AuthResponse
