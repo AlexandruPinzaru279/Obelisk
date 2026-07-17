@@ -12,6 +12,7 @@ class GameProgress(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
+    @Column(nullable = false, unique = true)
     var userId: Long = 1,
 
     var energy: Int = 0,
