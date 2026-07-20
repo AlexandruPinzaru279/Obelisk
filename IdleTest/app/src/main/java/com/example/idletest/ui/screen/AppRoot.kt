@@ -1,12 +1,14 @@
 package com.example.idletest.ui.screen
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.example.idletest.data.local.AuthStorage
+import com.example.idletest.data.local.SessionManager
 import com.example.idletest.domain.model.GameDifficulty
 import com.example.idletest.ui.navigation.AppScreen
 import com.example.idletest.ui.navigation.GameLaunchMode
@@ -34,13 +36,29 @@ fun AppRoot() {
         mutableStateOf(GameLaunchMode.CONTINUE)
     }
 
+    var loginMessage by rememberSaveable {
+        mutableStateOf<String?>(null)
+    }
+
+    LaunchedEffect(Unit) {
+        SessionManager.sessionExpiredEvents.collect {
+            loginMessage =
+                "Sesiunea a expirat. Autentifica-te din nou."
+
+            currentScreen = AppScreen.LOGIN
+        }
+    }
+
     when (currentScreen) {
         AppScreen.LOGIN -> {
             LoginScreen(
+                initialMessage = loginMessage,
                 onLoginSuccess = {
+                    loginMessage = null
                     currentScreen = AppScreen.MAIN_MENU
                 },
                 onRegisterClick = {
+                    loginMessage = null
                     currentScreen = AppScreen.REGISTER
                 }
             )
@@ -59,6 +77,7 @@ fun AppRoot() {
 
         AppScreen.MAIN_MENU -> {
             MainMenuScreen(
+                username = AuthStorage.getUsername(context) ?: "Player",
                 onContinueClick = {
                     gameLaunchMode = GameLaunchMode.CONTINUE
                     currentScreen = AppScreen.GAME
@@ -72,6 +91,11 @@ fun AppRoot() {
                 },
                 onPermanentUpgradesClick = {
                     currentScreen = AppScreen.PERMANENT_UPGRADES
+                },
+                onLogoutClick = {
+                    loginMessage = null
+                    AuthStorage.clearSession(context)
+                    currentScreen = AppScreen.LOGIN
                 }
             )
         }

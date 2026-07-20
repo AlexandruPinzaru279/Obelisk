@@ -35,7 +35,8 @@ import java.io.IOException
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    initialMessage: String? = null
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -48,8 +49,8 @@ fun LoginScreen(
         mutableStateOf("")
     }
 
-    var errorMessage by remember {
-        mutableStateOf<String?>(null)
+    var errorMessage by remember(initialMessage) {
+        mutableStateOf(initialMessage)
     }
 
     var isLoading by remember {

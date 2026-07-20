@@ -16,10 +16,12 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainMenuScreen(
+    username: String,
     onContinueClick: () -> Unit,
     onNewGameClick: () -> Unit,
     onAchievementsClick: () -> Unit,
-    onPermanentUpgradesClick: () -> Unit
+    onPermanentUpgradesClick: () -> Unit,
+    onLogoutClick: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -29,6 +31,12 @@ fun MainMenuScreen(
         Text(
             text = "Obelisk",
             style = MaterialTheme.typography.headlineLarge
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Logged in as: $username",
+            style = MaterialTheme.typography.bodyLarge
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -71,6 +79,17 @@ fun MainMenuScreen(
         ) {
             Text(
                 text = "Upgrades"
+            )
+        }
+
+        Spacer(modifier = Modifier.height(96.dp))
+
+        Button(
+            modifier = Modifier.width(240.dp),
+            onClick = onLogoutClick
+        ) {
+            Text(
+                text = "Logout"
             )
         }
     }

@@ -2,30 +2,48 @@ package com.example.idletest.data.remote.auth
 
 import android.content.Context
 import com.example.idletest.data.local.AuthStorage
+import com.example.idletest.data.local.SessionManager
 import okhttp3.Interceptor
 import okhttp3.Response
 
 class AuthInterceptor(
     context: Context
-): Interceptor {
-    private val applicationContext = context.applicationContext
+) : Interceptor {
 
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val token = AuthStorage.getToken(applicationContext)
+    private val applicationContext =
+        context.applicationContext
 
-        val requestBuilder = chain
-            .request()
-            .newBuilder()
+    override fun intercept(
+        chain: Interceptor.Chain
+    ): Response {
+        val originalRequest = chain.request()
 
-        if(!token.isNullOrBlank()) {
+        val isAuthRequest =
+            originalRequest.url().encodedPath()
+                .startsWith("/api/auth/")
+
+        val token =
+            AuthStorage.getToken(applicationContext)
+
+        val requestBuilder =
+            originalRequest.newBuilder()
+
+        if (!isAuthRequest && !token.isNullOrBlank()) {
             requestBuilder.header(
                 "Authorization",
                 "Bearer $token"
             )
         }
 
-        return chain.proceed(
-            requestBuilder.build()
-        )
+        val request = requestBuilder.build()
+        val response = chain.proceed(request)
+
+        if (response.code() == 401 && !isAuthRequest) {
+            SessionManager.notifySessionExpired(
+                applicationContext
+            )
+        }
+
+        return response
     }
 }
